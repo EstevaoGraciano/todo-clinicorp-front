@@ -1,12 +1,11 @@
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import "./App.css";
-import axios from "axios";
 import Container from "./components/container";
-import { useAnimation } from "./hooks/animation";
+import { useAnimation } from "./hooks/useAnimation";
 import Header from "./components/header";
-import { getTargetStatus } from "./helpers/status";
-import { getApiUrl } from "./helpers/api";
 import Error from "./components/error";
+import { getAllTasks } from "./services/tasks/getAllTasks";
+import { updateTaskStatus } from "./services/tasks/updateTaskStatus";
 
 function App() {
   const [tasks, setTasks] = useState([]);
@@ -14,38 +13,18 @@ function App() {
   const [closing, setClosing] = useState([]);
   const [opening, setOpening] = useState([]);
 
-  const getAllTasks = useCallback(async () => {
-    try {
-      const result = await axios.get(`${getApiUrl()}/get-tasks`);
-      setTasks(result.data.data);
-    } catch (e) {
-      if (e.response?.data) handleError(e.response.data.error);
-      console.error(e);
-    }
-  }, [setTasks]);
-
-  const updateTaskStatus = useCallback(
-    async (id, status, dir) => {
-      const targetStatus = getTargetStatus(status, dir);
-      try {
-        const result = await axios.put(`${getApiUrl()}/update-tasks`, {
-          id,
-          status: targetStatus,
-        });
-
-        if (result.status === 204) {
-          useAnimation(id, targetStatus, setClosing, setOpening, setTasks);
-        }
-      } catch (e) {
-        if (e.response?.data) handleError(e.response.data.error);
-        console.error(e);
-      }
-    },
-    [setClosing, setOpening, setTasks],
-  );
+  const handleUpdateTaskStatus = (id, status, dir) => {
+    updateTaskStatus(id, status, dir)
+      .then((val) => {
+        useAnimation(val.id, val.status, setClosing, setOpening, setTasks);
+      })
+      .catch((err) => {
+        if (err.errors) handleError(err.errors);
+      });
+  };
 
   useEffect(() => {
-    getAllTasks();
+    getAllTasks().then((val) => setTasks(val.data));
   }, []);
 
   const updateTaskList = (task) => setTasks((val) => [...val, task]);
@@ -64,7 +43,7 @@ function App() {
           name="To do"
           closing={closing}
           opening={opening}
-          onUpdate={updateTaskStatus}
+          onUpdate={handleUpdateTaskStatus}
           tasks={tasks.filter((task) => task.status === "todo")}
           onCreate={updateTaskList}
           onError={handleError}
@@ -75,7 +54,7 @@ function App() {
           status={"doing"}
           closing={closing}
           opening={opening}
-          onUpdate={updateTaskStatus}
+          onUpdate={handleUpdateTaskStatus}
           tasks={tasks.filter((task) => task.status === "doing")}
           onCreate={updateTaskList}
           onError={handleError}
@@ -86,7 +65,7 @@ function App() {
           status={"done"}
           closing={closing}
           opening={opening}
-          onUpdate={updateTaskStatus}
+          onUpdate={handleUpdateTaskStatus}
           tasks={tasks.filter((task) => task.status === "done")}
           onCreate={updateTaskList}
           onError={handleError}

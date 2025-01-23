@@ -1,30 +1,28 @@
 import axios from "axios";
 import { useCallback, useState } from "react";
 import { getApiUrl } from "../helpers/api";
+import { insertTask } from "../services/tasks/insertTask";
 
 function Card(props) {
   const [creating, setCreating] = useState(false);
   const [responsable, setResponsable] = useState("");
   const [description, setDescription] = useState("");
 
-  const handleCreate = useCallback(async () => {
+  const handleCreate = useCallback(() => {
     const task = {
       description,
       responsable,
       status: props.status,
     };
 
-    try {
-      const result = await axios.post(`${getApiUrl()}/insert-tasks`, task);
-
-      if (result.status === 201) {
-        props.onCreate && props.onCreate(result.data.data);
+    insertTask(task)
+      .then((val) => {
+        props.onCreate(val);
         setCreating(false);
-      }
-    } catch (e) {
-      if (e.response?.data) props.onError(e.response.data.error);
-      console.error(e);
-    }
+      })
+      .catch((err) => {
+        if (err.errors) props.onError(err.errors);
+      });
   }, [description, responsable, props]);
 
   return (
