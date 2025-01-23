@@ -19,6 +19,7 @@ function App() {
       const result = await axios.get(`${getApiUrl()}/get-tasks`);
       setTasks(result.data.data);
     } catch (e) {
+      if (e.response?.data) handleError(e.response.data.error);
       console.error(e);
     }
   }, [setTasks]);
@@ -36,6 +37,7 @@ function App() {
           useAnimation(id, targetStatus, setClosing, setOpening, setTasks);
         }
       } catch (e) {
+        if (e.response?.data) handleError(e.response.data.error);
         console.error(e);
       }
     },
