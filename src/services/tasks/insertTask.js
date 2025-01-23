@@ -6,7 +6,7 @@ export const insertTask = async (task) => {
     const result = await axios.post(`${getApiUrl()}/insert-tasks`, task);
 
     if (result.status === 201) {
-      return result.data.data;
+      return result.data;
     }
   } catch (e) {
     if (e.response?.data) return e.response.data;
