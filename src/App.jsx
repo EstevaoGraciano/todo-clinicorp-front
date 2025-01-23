@@ -1,21 +1,10 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import "./App.css";
 import axios from "axios";
 import Container from "./components/container";
-import Creator from "./components/creator";
 import { useAnimation } from "./hooks/animation";
-
-const getTargetStatus = (status, dir) => {
-  switch (status) {
-    case "todo":
-    case "done":
-      return "doing";
-    case "doing":
-      return dir === "left" ? "todo" : "done";
-    default:
-      return "todo";
-  }
-};
+import Header from "./components/header";
+import { getTargetStatus } from "./helpers/status";
 
 function App() {
   const [tasks, setTasks] = useState([]);
@@ -31,23 +20,6 @@ function App() {
     }
   }, [setTasks]);
 
-  const insertTask = useCallback(
-    async (task) => {
-      try {
-        const result = await axios.post(
-          "http://localhost:8080/insert-tasks",
-          task,
-        );
-
-        if (result.status === 201)
-          setTasks((val) => [...val, result.data.data]);
-      } catch (e) {
-        console.error(e);
-      }
-    },
-    [setTasks],
-  );
-
   const updateTaskStatus = useCallback(
     async (id, status, dir) => {
       const targetStatus = getTargetStatus(status, dir);
@@ -58,7 +30,7 @@ function App() {
         });
 
         if (result.status === 204) {
-                    useAnimation(id, targetStatus, setClosing, setOpening, setTasks)
+          useAnimation(id, targetStatus, setClosing, setOpening, setTasks);
         }
       } catch (e) {
         console.error(e);
@@ -71,10 +43,11 @@ function App() {
     getAllTasks();
   }, []);
 
+  const updateTaskList = (task) => setTasks((val) => [...val, task]);
+
   return (
     <div className="main">
-      <h1>TODO List</h1>
-      <Creator onCreate={insertTask} />
+      <Header />
       <div className="taskContainerWrapper">
         <Container
           closing={closing}
@@ -83,6 +56,8 @@ function App() {
           color="blue"
           name="To do"
           tasks={tasks.filter((task) => task.status === "todo")}
+          onCreate={updateTaskList}
+          status={"todo"}
         />
         <Container
           closing={closing}
@@ -91,6 +66,8 @@ function App() {
           color="orange"
           name="Doing"
           tasks={tasks.filter((task) => task.status === "doing")}
+          onCreate={updateTaskList}
+          status={"doing"}
         />
         <Container
           closing={closing}
@@ -99,6 +76,8 @@ function App() {
           color="green"
           name="Done"
           tasks={tasks.filter((task) => task.status === "done")}
+          onCreate={updateTaskList}
+          status={"done"}
         />
       </div>
     </div>
