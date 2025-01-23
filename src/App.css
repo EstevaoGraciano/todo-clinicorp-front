@@ -11,6 +11,8 @@
         "Open Sans",
         "Helvetica Neue",
         sans-serif;
+
+    overflow-x: hidden;
 }
 
 .main {
@@ -33,6 +35,31 @@
     box-shadow:
         0 10px 15px -3px rgb(0 0 0 / 0.1),
         0 4px 6px -4px rgb(0 0 0 / 0.1);
+}
+
+@keyframes fadein {
+    0% {
+        opacity: 0;
+    }
+
+    100% {
+        opacity: 1;
+    }
+}
+
+.errors {
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+    background-color: #f44;
+    padding: 20px;
+    animation: fadein 0.2s ease-in-out forwards;
+
+    border-radius: 6px;
+
+    position: absolute;
+    left: 50px;
+    bottom: 50px;
 }
 
 .taskContainerWrapper {
@@ -83,10 +110,11 @@
     justify-content: space-between;
 }
 
-.taskContainerHeader h1, .taskContainerHeader p {
-    font-size:medium;
+.taskContainerHeader h1,
+.taskContainerHeader p {
+    font-size: medium;
     font-weight: 900;
-    margin: 0
+    margin: 0;
 }
 
 .taskContainerHeader.blue {
@@ -147,6 +175,7 @@
     height: 70px;
     overflow: hidden;
     position: relative;
+    cursor: pointer;
 
     transition: all 0.2s ease-in-out;
 }
@@ -194,7 +223,7 @@
 }
 
 .cardWrapper input:nth-child(1) {
-    font-weight: 700
+    font-weight: 700;
 }
 
 ::placeholder {
@@ -206,7 +235,8 @@
     display: flex;
 }
 
-.addButton, .cancelButton {
+.addButton,
+.cancelButton {
     position: absolute;
     top: 50%;
     border-radius: 10px;

@@ -24,7 +24,13 @@ function Container(props) {
             {...task}
           />
         ))}
-        <Card color={props.color} createCard={true} status={props.status} onCreate={props.onCreate} />
+        <Card
+          color={props.color}
+          createCard={true}
+          status={props.status}
+          onCreate={props.onCreate}
+          onError={props.onError}
+        />
       </div>
     </div>
   );
