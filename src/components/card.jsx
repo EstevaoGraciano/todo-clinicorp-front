@@ -63,6 +63,7 @@ function Card(props) {
         <>
           <div className="cardDescription">{props.description}</div>
           <div className="cardResponsable">{props.responsable}</div>
+          <div className="cardComputer">{props.computer}</div>
         </>
       )}
     </div>

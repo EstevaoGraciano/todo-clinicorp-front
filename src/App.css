@@ -264,6 +264,14 @@
     font-weight: 900;
 }
 
+.cardComputer {
+    position: absolute;
+    font-size: 12px;
+
+    right: 8px;
+    bottom: 4px;
+}
+
 .cardDescription {
     font-weight: 700;
 }
