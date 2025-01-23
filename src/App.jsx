@@ -3,6 +3,7 @@ import "./App.css";
 import axios from "axios";
 import Container from "./components/container";
 import Creator from "./components/creator";
+import { useAnimation } from "./hooks/animation";
 
 const getTargetStatus = (status, dir) => {
   switch (status) {
@@ -21,44 +22,6 @@ function App() {
   const [closing, setClosing] = useState([]);
   const [opening, setOpening] = useState([]);
 
-  const handleAnimationOpening = (id) => {
-    setClosing((val) => {
-      let closingArray = [...val];
-      closingArray.splice(
-        val.findIndex((i) => i === id),
-        1,
-      );
-      return [...closingArray];
-    });
-    setOpening((val) => [...val, id]);
-    setTimeout(() => {
-      setOpening((val) => {
-        let openingArray = [...val];
-        openingArray.splice(
-          val.findIndex((i) => i === id),
-          1,
-        );
-        return [...openingArray];
-      });
-    }, 300);
-  };
-
-  const handleAnimationClosing = (id, status) => {
-    setClosing((val) => [...val, id]);
-    setTimeout(() => {
-      setTasks((val) => {
-        let taskArray = [...val];
-        const index = taskArray.findIndex((t) => t.id === id);
-        let t = taskArray[index];
-        t.status = status;
-        taskArray[index] = t;
-        console.log("index", taskArray[index]);
-        return [...taskArray];
-      });
-      handleAnimationOpening(id);
-    }, 300);
-  };
-
   const getAllTasks = useCallback(async () => {
     try {
       const result = await axios.get("http://localhost:8080/get-tasks");
@@ -68,30 +31,50 @@ function App() {
     }
   }, [setTasks]);
 
-  const updateTaskStatus = useCallback(async (id, status) => {
-    const targetStatus = getTargetStatus(status);
-    try {
-      const result = await axios.put("http://localhost:8080/update-tasks", {
-        id,
-        status: targetStatus,
-      });
+  const insertTask = useCallback(
+    async (task) => {
+      try {
+        const result = await axios.post(
+          "http://localhost:8080/insert-tasks",
+          task,
+        );
 
-      if (result.status === 204) {
-        handleAnimationClosing(id, targetStatus);
+        if (result.status === 201)
+          setTasks((val) => [...val, result.data.data]);
+      } catch (e) {
+        console.error(e);
       }
-    } catch (e) {
-      console.error(e);
-    }
-  }, [handleAnimationClosing]);
+    },
+    [setTasks],
+  );
+
+  const updateTaskStatus = useCallback(
+    async (id, status, dir) => {
+      const targetStatus = getTargetStatus(status, dir);
+      try {
+        const result = await axios.put("http://localhost:8080/update-tasks", {
+          id,
+          status: targetStatus,
+        });
+
+        if (result.status === 204) {
+                    useAnimation(id, targetStatus, setClosing, setOpening, setTasks)
+        }
+      } catch (e) {
+        console.error(e);
+      }
+    },
+    [setClosing, setOpening, setTasks],
+  );
 
   useEffect(() => {
     getAllTasks();
   }, []);
 
   return (
-    <>
-      <h1>Tasks</h1>
-      <Creator />
+    <div className="main">
+      <h1>TODO List</h1>
+      <Creator onCreate={insertTask} />
       <div className="taskContainerWrapper">
         <Container
           closing={closing}
@@ -118,7 +101,7 @@ function App() {
           tasks={tasks.filter((task) => task.status === "done")}
         />
       </div>
-    </>
+    </div>
   );
 }
 

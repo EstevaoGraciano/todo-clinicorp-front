@@ -1,7 +1,7 @@
 function Card(props) {
   return (
     <div
-      onClick={props.onUpdate}
+      onMouseDown={props.onUpdate}
       className={`cardWrapper ${props.color} ${props.opening ? "opening" : ""} 
         ${props.closing ? "closing" : ""}`}
     >

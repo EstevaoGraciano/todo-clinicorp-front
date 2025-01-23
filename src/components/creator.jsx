@@ -1,26 +1,37 @@
-import { useState } from "react";
+import { useCallback, useState } from "react";
 
-function Creator() {
+function Creator(props) {
   const [description, setDescription] = useState("");
   const [responsable, setResponsable] = useState("");
 
+  const handleCreate = useCallback(() => {
+    const task = {
+      description,
+      responsable,
+      status: "todo",
+    };
+    props.onCreate && props.onCreate(task);
+  }, [description, responsable]);
+
   return (
     <div className="creatorWrapper">
-      <div className="creatorInput">
-        <p>Description</p>
-        <input
-          value={description}
-          onChange={(e) => setDescription(e.target.value)}
-        />
+      <div className="creatorInputWrapper">
+        <div className="creatorInput">
+          <p>Description</p>
+          <input
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+          />
+        </div>
+        <div className="creatorInput">
+          <p>Responsable</p>
+          <input
+            value={responsable}
+            onChange={(e) => setResponsable(e.target.value)}
+          />
+        </div>
       </div>
-      <div className="creatorInput">
-        <p>Responsable</p>
-        <input
-          value={responsable}
-          onChange={(e) => setResponsable(e.target.value)}
-        />
-      </div>
-      <button>LOL</button>
+      <button onClick={() => handleCreate()}>Create Task</button>
     </div>
   );
 }

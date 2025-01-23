@@ -1,5 +1,4 @@
 #root {
-    max-width: 1280px;
     font-family:
         system-ui,
         -apple-system,
@@ -14,10 +13,15 @@
         sans-serif;
 }
 
+.main {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
 .taskContainerWrapper {
     display: flex;
     flex-direction: row;
-    gap: 10%;
     text-align: center;
 }
 
@@ -26,6 +30,7 @@
     flex-direction: column;
 
     padding: 20px;
+    margin-inline: 20px;
 
     border-radius: 10px;
 
@@ -44,14 +49,48 @@
     border: 4px solid #22a454;
 }
 
+.taskContainerWrapper h1 {
+    padding: 10px;
+    border-radius: 10px;
+    margin-inline: 20px;
+}
+
+h1.blue {
+    background-color: #2288e6;
+}
+
+h1.orange {
+    background-color: #ffaa2b;
+}
+
+h1.green {
+    background-color: #22a454;
+}
+
 @keyframes close {
-  0% { height: 80px; }
-  100% { height: 0px; padding-block: 0px; margin-block: 0px; }
+    0% {
+        height: 80px;
+    }
+
+    100% {
+        height: 0px;
+        padding-block: 0px;
+        margin-block: 0px;
+    }
 }
 
 @keyframes open {
-  0% { height: 0px; padding-block: 0px; margin-block: 0px; }
-  100% { height: 80px; padding-block: 12px; margin-bloc: 5px; }
+    0% {
+        height: 0px;
+        padding-block: 0px;
+        margin-block: 0px;
+    }
+
+    100% {
+        height: 80px;
+        padding-block: 12px;
+        margin-bloc: 5px;
+    }
 }
 
 .cardWrapper {
@@ -73,14 +112,20 @@
     width: 20vw;
     height: 80px;
     overflow: hidden;
+
+    transition: all 0.2s ease-in-out;
+}
+
+.cardWrapper:hover {
+    filter: brightness(1.3);
 }
 
 .cardWrapper.closing {
-    animation: close .3s ease-in-out forwards
+    animation: close 0.3s ease-in-out forwards;
 }
 
 .cardWrapper.opening {
-    animation: open .3s ease-in-out forwards
+    animation: open 0.3s ease-in-out forwards;
 }
 
 .cardWrapper.blue {
@@ -102,6 +147,36 @@
 .cardResponsable {}
 
 .creatorWrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.creatorWrapper button {
+    margin-block: 16px;
+    width: 50%;
+    border-radius: 8px;
+    border: 1px solid transparent;
+    padding: 0.6em 1.2em;
+    font-size: 1em;
+    font-weight: 500;
+    font-family: inherit;
+    background-color: #646cff;
+    color: #fff;
+    cursor: pointer;
+    transition: border-color 0.25s;
+}
+
+.creatorWrapper button:hover {
+    border-color: #646cff;
+}
+
+.creatorWrapper button:focus,
+.creatorWrapper button:focus-visible {
+    outline: 4px auto -webkit-focus-ring-color;
+}
+
+.creatorInputWrapper {
     display: flex;
     flex-direction: row;
     gap: 20px;
